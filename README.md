@@ -1,1 +1,1 @@
-# plink2_reader
+c++ code to read plink2 format
