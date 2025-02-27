@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <stdexcept>
+using namespace std;
 
 class Plink2Reader {
 private:
@@ -124,8 +125,13 @@ int main() {
         // Print some example data
         std::cout << "Samples: " << sample_ids.size() << "\n";
         std::cout << "Variants: " << variant_ids.size() << "\n";
-        std::cout << "First few genotypes for sample 0:\n";
-        for (int i = 0; i < std::min(5, (int)genotypes[0].size()); ++i) {
+        std::cout << "Genotypes for sample 0:\n";
+        std::cout << "Genotypes size: " << genotypes[0].size() << std::endl;
+
+        cout << genotypes.size() << endl;
+
+
+        for (int i = 0; i < (int)genotypes[0].size(); ++i) {
             std::cout << genotypes[0][i] << " ";
         }
         std::cout << "\n";
