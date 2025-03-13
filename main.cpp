@@ -11,11 +11,11 @@ private:
     std::ifstream pvar_file;
     std::ifstream psam_file;
 
+public:
     uint32_t variant_count;
     uint32_t sample_count;
     uint64_t file_size;
 
-public:
     Plink2Reader(const std::string& pgen_path,
         const std::string& pvar_path,
         const std::string& psam_path) {
@@ -138,6 +138,11 @@ public:
 int main() {
     try {
         Plink2Reader reader("plink2.pgen", "plink2.pvar", "plink2.psam");
+
+        size_t variant_count = reader.variant_count;
+        size_t sample_count = reader.sample_count;
+
+
 
         // Read a chunk of sample IDs
         std::vector<std::string> sample_ids;
