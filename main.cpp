@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <stdexcept>
+#include <cstdint>
 using namespace std;
 
 class Plink2Reader {
@@ -135,8 +136,10 @@ public:
 };
 
 // Example usage
-int main() {
-	try {
+int main(void) 
+{
+	try 
+	{
 		Plink2Reader reader("data2.pgen", "data2.pvar", "data2.psam");
 
 		const size_t variant_count = reader.variant_count;
@@ -145,8 +148,8 @@ int main() {
 		cout << "Variant count " << variant_count << endl;
 		cout << "Sample count " << sample_count << endl;
 
-		size_t variant_chunk_size = 32;
-		size_t sample_chunk_size = 32;
+		const size_t variant_chunk_size = 32;
+		const size_t sample_chunk_size = 32;
 
 		for (size_t i = 0; i < variant_count; i += variant_chunk_size)
 		{
@@ -155,14 +158,6 @@ int main() {
 			if (variant_end_chunk >= variant_count)
 				variant_end_chunk = variant_count - 1;
 
-			//if(i + actual_variant_chunk_size >= variant_count)
-
-
-			//if (i + actual_variant_chunk_size >= variant_count)
-			//	actual_variant_chunk_size = (i + actual_variant_chunk_size) - variant_count;
-
-
-
 			for (size_t j = 0; j < sample_count; j += sample_chunk_size)
 			{
 				size_t sample_end_chunk = j + sample_chunk_size;
@@ -170,11 +165,11 @@ int main() {
 				if (sample_end_chunk >= sample_count)
 					sample_end_chunk = sample_count - 1;
 
-				//cout << i << " " << variant_end_chunk << endl;
-				//cout << j << " " << sample_end_chunk  << endl;
-
 				std::vector<std::vector<int>> genotypes;
 				reader.readGenotypesChunk(genotypes, i, variant_end_chunk, j, sample_end_chunk);
+
+				cout << genotypes.size() << endl;
+
 
 				//for (int i = 0; i < (int)genotypes[0].size(); ++i)
 				//{
