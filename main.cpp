@@ -63,42 +63,71 @@ private:
     }
 
 public:
-    void readGenotypes(std::vector<std::vector<int>>& genotypes) {
-        genotypes.resize(sample_count, std::vector<int>(variant_count));
+    void readGenotypesChunk(std::vector<std::vector<int>>& genotypes, uint32_t start_variant, uint32_t end_variant, uint32_t start_sample, uint32_t end_sample) {
+        if (end_variant > variant_count || end_sample > sample_count) {
+            throw std::out_of_range("Requested chunk is out of range");
+        }
 
-        // This is a simplified version - actual implementation depends on storage mode
-        for (uint32_t variant = 0; variant < variant_count; ++variant) {
-            for (uint32_t sample = 0; sample < sample_count; ++sample) {
+        uint32_t num_variants = end_variant - start_variant;
+        uint32_t num_samples = end_sample - start_sample;
+
+        genotypes.resize(num_samples, std::vector<int>(num_variants));
+
+        // Calculate the starting position in the file
+        uint64_t start_pos = 11 + (start_variant * sample_count + start_sample) / 4;
+        pgen_file.seekg(start_pos);
+
+        for (uint32_t variant = start_variant; variant < end_variant; ++variant) {
+            for (uint32_t sample = start_sample; sample < end_sample; ++sample) {
                 // Read 2-bit genotype (0,1,2, or 3 for missing)
                 uint8_t byte;
                 pgen_file.read(reinterpret_cast<char*>(&byte), 1);
                 int genotype = byte & 0x03; // Extract first genotype from byte
-                genotypes[sample][variant] = (genotype == 3) ? -1 : genotype; // -1 for missing
-
-                // Note: This assumes simplest format (mode 1).
-                // Real implementation would need to handle different compression modes
+                genotypes[sample - start_sample][variant - start_variant] = (genotype == 3) ? -1 : genotype; // -1 for missing
             }
         }
     }
 
-    void readVariantInfo(std::vector<std::string>& variant_ids) {
+    void readVariantInfoChunk(std::vector<std::string>& variant_ids, uint32_t start_variant, uint32_t end_variant) {
+        if (end_variant > variant_count) {
+            throw std::out_of_range("Requested chunk is out of range");
+        }
+
         std::string line;
         // Skip header line in .pvar
         std::getline(pvar_file, line);
 
-        while (std::getline(pvar_file, line)) {
+        // Skip to the start variant
+        for (uint32_t i = 0; i < start_variant; ++i) {
+            std::getline(pvar_file, line);
+        }
+
+        // Read the chunk of variants
+        for (uint32_t i = start_variant; i < end_variant; ++i) {
+            std::getline(pvar_file, line);
             std::string id = line.substr(line.find('\t') + 1);
             id = id.substr(0, id.find('\t'));
             variant_ids.push_back(id);
         }
     }
 
-    void readSampleInfo(std::vector<std::string>& sample_ids) {
+    void readSampleInfoChunk(std::vector<std::string>& sample_ids, uint32_t start_sample, uint32_t end_sample) {
+        if (end_sample > sample_count) {
+            throw std::out_of_range("Requested chunk is out of range");
+        }
+
         std::string line;
         // Skip header line in .psam
         std::getline(psam_file, line);
 
-        while (std::getline(psam_file, line)) {
+        // Skip to the start sample
+        for (uint32_t i = 0; i < start_sample; ++i) {
+            std::getline(psam_file, line);
+        }
+
+        // Read the chunk of samples
+        for (uint32_t i = start_sample; i < end_sample; ++i) {
+            std::getline(psam_file, line);
             std::string id = line.substr(0, line.find('\t'));
             sample_ids.push_back(id);
         }
@@ -108,34 +137,28 @@ public:
 // Example usage
 int main() {
     try {
-        Plink2Reader reader("data2.pgen", "data2.pvar", "data2.psam");
+        Plink2Reader reader("plink2.pgen", "plink2.pvar", "plink2.psam");
 
-        // Read sample IDs
+        // Read a chunk of sample IDs
         std::vector<std::string> sample_ids;
-        reader.readSampleInfo(sample_ids);
+        reader.readSampleInfoChunk(sample_ids, 0, 10); // Read first 10 samples
 
-        // Read variant IDs
+        // Read a chunk of variant IDs
         std::vector<std::string> variant_ids;
-        reader.readVariantInfo(variant_ids);
+        reader.readVariantInfoChunk(variant_ids, 0, 100); // Read first 100 variants
 
-        // Read genotype data
+        // Read a chunk of genotype data
         std::vector<std::vector<int>> genotypes;
-        reader.readGenotypes(genotypes);
+        reader.readGenotypesChunk(genotypes, 0, 100, 0, 10); // Read first 100 variants for first 10 samples
 
         // Print some example data
         std::cout << "Samples: " << sample_ids.size() << "\n";
         std::cout << "Variants: " << variant_ids.size() << "\n";
         std::cout << "Genotypes for sample 0:\n";
-        std::cout << "Genotypes size: " << genotypes[0].size() << std::endl;
-
-        cout << genotypes.size() << endl;
-
-
         for (int i = 0; i < (int)genotypes[0].size(); ++i) {
             std::cout << genotypes[0][i] << " ";
         }
         std::cout << "\n";
-
     }
     catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;
