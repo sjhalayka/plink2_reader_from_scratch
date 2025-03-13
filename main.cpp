@@ -137,7 +137,7 @@ public:
 // Example usage
 int main() {
 	try {
-		Plink2Reader reader("plink2.pgen", "plink2.pvar", "plink2.psam");
+		Plink2Reader reader("data2.pgen", "data2.pvar", "data2.psam");
 
 		const size_t variant_count = reader.variant_count;
 		const size_t sample_count = reader.sample_count;
@@ -150,38 +150,41 @@ int main() {
 
 		for (size_t i = 0; i < variant_count; i += variant_chunk_size)
 		{
-			long signed int actual_variant_chunk_size = variant_chunk_size;
+			size_t actual_variant_chunk_size = variant_chunk_size;
 
-			if (i + actual_variant_chunk_size >= variant_count)
-				actual_variant_chunk_size = (i + actual_variant_chunk_size) - variant_count;
+			size_t variant_end_chunk = i + actual_variant_chunk_size;
 
-			if (actual_variant_chunk_size == 0)
-				break;
+			if (variant_end_chunk >= variant_count)
+				variant_end_chunk = variant_count - 1;
+
+			//if(i + actual_variant_chunk_size >= variant_count)
+
+
+			//if (i + actual_variant_chunk_size >= variant_count)
+			//	actual_variant_chunk_size = (i + actual_variant_chunk_size) - variant_count;
+
+
 
 			for (size_t j = 0; j < sample_count; j += sample_chunk_size)
 			{
-				long signed int actual_sample_chunk_size = sample_chunk_size;
+				size_t actual_sample_chunk_size = sample_chunk_size;
 
-				if (j + actual_sample_chunk_size >= sample_count)
-					actual_sample_chunk_size = (j + actual_sample_chunk_size) - sample_count;
+				size_t sample_end_chunk = j + actual_sample_chunk_size;
 
-				if (actual_sample_chunk_size == 0)
-					break;
+				if (sample_end_chunk >= sample_count)
+					sample_end_chunk = sample_count - 1;
+
+				//cout << i << " " << variant_end_chunk << endl;
+				//cout << j << " " << sample_end_chunk  << endl;
 
 				std::vector<std::vector<int>> genotypes;
-				reader.readGenotypesChunk(genotypes, i, i + actual_variant_chunk_size, j, j + actual_sample_chunk_size);
+				reader.readGenotypesChunk(genotypes, i, variant_end_chunk, j, sample_end_chunk);
 
-				/*
-				std::cout << "Samples: " << sample_ids.size() << "\n";
-				std::cout << "Variants: " << variant_ids.size() << "\n";
-				std::cout << "Genotypes for sample 0:\n";
-
-				for (int i = 0; i < (int)genotypes[0].size(); ++i)
-				{
-					std::cout << genotypes[0][i] << " ";
-				}
-
-				std::cout << "\n";*/
+				//for (int i = 0; i < (int)genotypes[0].size(); ++i)
+				//{
+				//	std::cout << genotypes[0][i] << " ";
+				//}
+				//std::cout << "\n";
 			}
 
 		}
