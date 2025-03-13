@@ -41,14 +41,15 @@ public:
 	}
 
 private:
-	void readHeader() {
+	void readHeader()
+	{
 		// Read magic numbers (first 2 bytes should be 0x6c, 0x1b)
 		char magic[2];
 		pgen_file.read(magic, 2);
-		if (magic[0] != 0x6c || magic[1] != 0x1b) {
+		
+		if (magic[0] != 0x6c || magic[1] != 0x1b) 
 			throw std::runtime_error("Invalid PGEN file format");
-		}
-
+		
 		// Read mode byte
 		char mode;
 		pgen_file.read(&mode, 1);
@@ -64,10 +65,10 @@ private:
 	}
 
 public:
-	void readGenotypesChunk(std::vector<std::vector<int>>& genotypes, uint32_t start_variant, uint32_t end_variant, uint32_t start_sample, uint32_t end_sample) {
-		if (end_variant > variant_count || end_sample > sample_count) {
+	void readGenotypesChunk(std::vector<std::vector<int>>& genotypes, uint32_t start_variant, uint32_t end_variant, uint32_t start_sample, uint32_t end_sample) 
+	{
+		if (end_variant > variant_count || end_sample > sample_count)
 			throw std::out_of_range("Requested chunk is out of range");
-		}
 
 		uint32_t num_variants = end_variant - start_variant;
 		uint32_t num_samples = end_sample - start_sample;
@@ -89,10 +90,10 @@ public:
 		}
 	}
 
-	void readVariantInfoChunk(std::vector<std::string>& variant_ids, uint32_t start_variant, uint32_t end_variant) {
-		if (end_variant > variant_count) {
+	void readVariantInfoChunk(std::vector<std::string>& variant_ids, uint32_t start_variant, uint32_t end_variant) 
+	{
+		if (end_variant > variant_count) 
 			throw std::out_of_range("Requested chunk is out of range");
-		}
 
 		std::string line;
 		// Skip header line in .pvar
@@ -112,22 +113,22 @@ public:
 		}
 	}
 
-	void readSampleInfoChunk(std::vector<std::string>& sample_ids, uint32_t start_sample, uint32_t end_sample) {
-		if (end_sample > sample_count) {
+	void readSampleInfoChunk(std::vector<std::string>& sample_ids, uint32_t start_sample, uint32_t end_sample)
+	{
+		if (end_sample > sample_count)
 			throw std::out_of_range("Requested chunk is out of range");
-		}
 
 		std::string line;
 		// Skip header line in .psam
 		std::getline(psam_file, line);
 
 		// Skip to the start sample
-		for (uint32_t i = 0; i < start_sample; ++i) {
+		for (uint32_t i = 0; i < start_sample; ++i)
 			std::getline(psam_file, line);
-		}
 
 		// Read the chunk of samples
-		for (uint32_t i = start_sample; i < end_sample; ++i) {
+		for (uint32_t i = start_sample; i < end_sample; ++i) 
+		{
 			std::getline(psam_file, line);
 			std::string id = line.substr(0, line.find('\t'));
 			sample_ids.push_back(id);
@@ -180,7 +181,8 @@ int main(void)
 
 		}
 	}
-	catch (const std::exception& e) {
+	catch (const std::exception& e)
+	{
 		std::cerr << "Error: " << e.what() << std::endl;
 		return 1;
 	}
