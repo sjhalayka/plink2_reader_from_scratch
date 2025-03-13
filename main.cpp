@@ -140,7 +140,7 @@ int main(void)
 {
 	try 
 	{
-		Plink2Reader reader("data2.pgen", "data2.pvar", "data2.psam");
+		Plink2Reader reader("plink2.pgen", "plink2.pvar", "plink2.psam");
 
 		const size_t variant_count = reader.variant_count;
 		const size_t sample_count = reader.sample_count;
