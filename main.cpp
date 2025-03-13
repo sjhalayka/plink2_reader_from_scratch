@@ -150,9 +150,7 @@ int main() {
 
 		for (size_t i = 0; i < variant_count; i += variant_chunk_size)
 		{
-			size_t actual_variant_chunk_size = variant_chunk_size;
-
-			size_t variant_end_chunk = i + actual_variant_chunk_size;
+			size_t variant_end_chunk = i + variant_chunk_size;
 
 			if (variant_end_chunk >= variant_count)
 				variant_end_chunk = variant_count - 1;
@@ -167,9 +165,7 @@ int main() {
 
 			for (size_t j = 0; j < sample_count; j += sample_chunk_size)
 			{
-				size_t actual_sample_chunk_size = sample_chunk_size;
-
-				size_t sample_end_chunk = j + actual_sample_chunk_size;
+				size_t sample_end_chunk = j + sample_chunk_size;
 
 				if (sample_end_chunk >= sample_count)
 					sample_end_chunk = sample_count - 1;
