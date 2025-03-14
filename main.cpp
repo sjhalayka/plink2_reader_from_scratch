@@ -57,7 +57,7 @@ private:
 		pgen_file.read(&storage_mode, 1);
 
 		if (storage_mode != 0x10)
-			throw std::runtime_error("Invalid storage mode");
+			throw std::runtime_error("Unsupported storage mode");
 
 		// Read variant and sample counts
 		pgen_file.read(reinterpret_cast<char*>(&variant_count), 4);
