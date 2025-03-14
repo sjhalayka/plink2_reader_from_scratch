@@ -54,6 +54,9 @@ private:
 		char mode;
 		pgen_file.read(&mode, 1);
 
+		if (mode != 0x10)
+			throw std::runtime_error("Invalid storage mode");
+
 		// Read variant and sample counts
 		pgen_file.read(reinterpret_cast<char*>(&variant_count), 4);
 		pgen_file.read(reinterpret_cast<char*>(&sample_count), 4);
@@ -96,8 +99,8 @@ public:
 			}
 		}
 
-		cout << "Bytes read:" << bytes_to_read << endl;
-		cout << endl;
+		//cout << "Bytes read:" << bytes_to_read << endl;
+		//cout << endl;
 
 	}
 
