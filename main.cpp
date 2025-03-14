@@ -67,7 +67,7 @@ private:
 public:
 	void readGenotypesChunk(std::vector<std::vector<int>>& genotypes, uint32_t start_variant, uint32_t end_variant, uint32_t start_sample, uint32_t end_sample) 
 	{
-		if (end_variant > variant_count || end_sample > sample_count)
+		if (end_variant >= variant_count || end_sample >= sample_count)
 			throw std::out_of_range("Requested chunk is out of range");
 
 		uint32_t num_variants = end_variant - start_variant;
@@ -103,7 +103,7 @@ public:
 
 	void readVariantInfoChunk(std::vector<std::string>& variant_ids, uint32_t start_variant, uint32_t end_variant) 
 	{
-		if (end_variant > variant_count) 
+		if (end_variant >= variant_count) 
 			throw std::out_of_range("Requested chunk is out of range");
 
 		std::string line;
@@ -126,7 +126,7 @@ public:
 
 	void readSampleInfoChunk(std::vector<std::string>& sample_ids, uint32_t start_sample, uint32_t end_sample)
 	{
-		if (end_sample > sample_count)
+		if (end_sample >= sample_count)
 			throw std::out_of_range("Requested chunk is out of range");
 
 		std::string line;
