@@ -75,21 +75,30 @@ public:
 
 		genotypes.resize(num_samples, std::vector<int>(num_variants));
 
-		// Calculate the starting position in the file
-		uint64_t start_pos = 11 + (start_variant * sample_count + start_sample) / 4;
+		const uint64_t start_pos = 11 + (start_variant * sample_count + start_sample) / 4;
 		pgen_file.seekg(start_pos);
+
+		const uint32_t bytes_to_read = (end_variant - start_variant) * (end_sample - start_sample);
+
+		vector<uint8_t> file_chunk(bytes_to_read);
+		pgen_file.read(reinterpret_cast<char*>(&file_chunk[0]), bytes_to_read);
+
+		uint32_t file_chunk_index = 0;
 
 		for (uint32_t variant = start_variant; variant < end_variant; ++variant)
 		{
 			for (uint32_t sample = start_sample; sample < end_sample; ++sample) 
 			{
-				// Read 2-bit genotype (0,1,2, or 3 for missing)
-				uint8_t byte;
-				pgen_file.read(reinterpret_cast<char*>(&byte), 1);
-				int genotype = byte & 0x03; // Extract first genotype from byte
+				int genotype = file_chunk[file_chunk_index] & 0x03; // Extract first genotype from byte
 				genotypes[sample - start_sample][variant - start_variant] = (genotype == 3) ? -1 : genotype; // -1 for missing
+
+				file_chunk_index++;
 			}
 		}
+
+		cout << "Bytes read:" << bytes_to_read << endl;
+		cout << endl;
+
 	}
 
 	void readVariantInfoChunk(std::vector<std::string>& variant_ids, uint32_t start_variant, uint32_t end_variant) 
@@ -152,7 +161,7 @@ int main(void)
 		cout << "Sample count " << sample_count << endl;
 
 		const uint32_t variant_chunk_size = 32;
-		const uint32_t sample_chunk_size = 32;
+		const uint32_t sample_chunk_size = 64;
 
 		for (uint32_t i = 0; i < variant_count; i += variant_chunk_size)
 		{
@@ -171,8 +180,7 @@ int main(void)
 				std::vector<std::vector<int>> genotypes;
 				reader.readGenotypesChunk(genotypes, i, variant_end_chunk, j, sample_end_chunk);
 
-				cout << genotypes.size() << endl;
-
+				//cout << genotypes.size() << endl;
 
 				//for (int i = 0; i < (int)genotypes[0].size(); ++i)
 				//{
