@@ -102,12 +102,12 @@ public:
 		std::getline(pvar_file, line);
 
 		// Skip to the start variant
-		for (uint32_t i = 0; i < start_variant; ++i) {
+		for (uint32_t i = 0; i < start_variant; ++i) 
 			std::getline(pvar_file, line);
-		}
 
 		// Read the chunk of variants
-		for (uint32_t i = start_variant; i < end_variant; ++i) {
+		for (uint32_t i = start_variant; i < end_variant; ++i)
+		{
 			std::getline(pvar_file, line);
 			std::string id = line.substr(line.find('\t') + 1);
 			id = id.substr(0, id.find('\t'));
