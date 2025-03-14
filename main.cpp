@@ -48,10 +48,10 @@ private:
 		// Read magic numbers (first 2 bytes should be 0x6c, 0x1b)
 		char magic[2];
 		pgen_file.read(magic, 2);
-		
-		if (magic[0] != 0x6c || magic[1] != 0x1b) 
+
+		if (magic[0] != 0x6c || magic[1] != 0x1b)
 			throw std::runtime_error("Invalid PGEN file format");
-		
+
 		// Read mode byte
 		char storage_mode;
 		pgen_file.read(&storage_mode, 1);
@@ -70,7 +70,7 @@ private:
 	}
 
 public:
-	void readGenotypesChunk(std::vector<std::vector<int>>& genotypes, uint32_t start_variant, uint32_t end_variant, uint32_t start_sample, uint32_t end_sample) 
+	void readGenotypesChunk(std::vector<std::vector<int>>& genotypes, uint32_t start_variant, uint32_t end_variant, uint32_t start_sample, uint32_t end_sample)
 	{
 		if (end_variant >= variant_count || end_sample >= sample_count)
 			throw std::out_of_range("Requested chunk is out of range");
@@ -92,7 +92,7 @@ public:
 
 		for (uint32_t variant = start_variant; variant < end_variant; ++variant)
 		{
-			for (uint32_t sample = start_sample; sample < end_sample; ++sample) 
+			for (uint32_t sample = start_sample; sample < end_sample; ++sample)
 			{
 				int genotype = file_chunk[file_chunk_index] & 0x03; // Extract first genotype from byte
 				genotypes[sample - start_sample][variant - start_variant] = (genotype == 3) ? -1 : genotype; // -1 for missing
@@ -106,9 +106,9 @@ public:
 
 	}
 
-	void readVariantInfoChunk(std::vector<std::string>& variant_ids, uint32_t start_variant, uint32_t end_variant) 
+	void readVariantInfoChunk(std::vector<std::string>& variant_ids, uint32_t start_variant, uint32_t end_variant)
 	{
-		if (end_variant >= variant_count) 
+		if (end_variant >= variant_count)
 			throw std::out_of_range("Requested chunk is out of range");
 
 		std::string line;
@@ -116,7 +116,7 @@ public:
 		std::getline(pvar_file, line);
 
 		// Skip to the start variant
-		for (uint32_t i = 0; i < start_variant; ++i) 
+		for (uint32_t i = 0; i < start_variant; ++i)
 			std::getline(pvar_file, line);
 
 		// Read the chunk of variants
@@ -143,7 +143,7 @@ public:
 			std::getline(psam_file, line);
 
 		// Read the chunk of samples
-		for (uint32_t i = start_sample; i < end_sample; ++i) 
+		for (uint32_t i = start_sample; i < end_sample; ++i)
 		{
 			std::getline(psam_file, line);
 			std::string id = line.substr(0, line.find('\t'));
@@ -153,9 +153,9 @@ public:
 };
 
 // Example usage
-int main(void) 
+int main(void)
 {
-	try 
+	try
 	{
 		Plink2Reader reader("plink2.pgen", "plink2.pvar", "plink2.psam");
 
