@@ -43,6 +43,8 @@ public:
 private:
 	void readHeader()
 	{
+		// See: https://github.com/chrchang/plink-ng/blob/master/pgen_spec/pgen_spec.pdf
+
 		// Read magic numbers (first 2 bytes should be 0x6c, 0x1b)
 		char magic[2];
 		pgen_file.read(magic, 2);
