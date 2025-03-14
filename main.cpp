@@ -53,10 +53,10 @@ private:
 			throw std::runtime_error("Invalid PGEN file format");
 		
 		// Read mode byte
-		char mode;
-		pgen_file.read(&mode, 1);
+		char storage_mode;
+		pgen_file.read(&storage_mode, 1);
 
-		if (mode != 0x10)
+		if (storage_mode != 0x10)
 			throw std::runtime_error("Invalid storage mode");
 
 		// Read variant and sample counts
