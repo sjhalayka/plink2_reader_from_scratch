@@ -17,18 +17,18 @@ public:
 	uint32_t sample_count;
 	uint64_t file_size;
 
-	Plink2Reader(const std::string& pgen_path,
+	Plink2Reader(
+		const std::string& pgen_path,
 		const std::string& pvar_path,
-		const std::string& psam_path) {
-
+		const std::string& psam_path)
+	{
 		// Open files
 		pgen_file.open(pgen_path, std::ios::binary);
 		pvar_file.open(pvar_path);
 		psam_file.open(psam_path);
 
-		if (!pgen_file.is_open() || !pvar_file.is_open() || !psam_file.is_open()) {
+		if (!pgen_file.is_open() || !pvar_file.is_open() || !psam_file.is_open())
 			throw std::runtime_error("Failed to open one or more PLINK2 files");
-		}
 
 		// Read header from pgen file
 		readHeader();
@@ -79,8 +79,10 @@ public:
 		uint64_t start_pos = 11 + (start_variant * sample_count + start_sample) / 4;
 		pgen_file.seekg(start_pos);
 
-		for (uint32_t variant = start_variant; variant < end_variant; ++variant) {
-			for (uint32_t sample = start_sample; sample < end_sample; ++sample) {
+		for (uint32_t variant = start_variant; variant < end_variant; ++variant)
+		{
+			for (uint32_t sample = start_sample; sample < end_sample; ++sample) 
+			{
 				// Read 2-bit genotype (0,1,2, or 3 for missing)
 				uint8_t byte;
 				pgen_file.read(reinterpret_cast<char*>(&byte), 1);
@@ -143,25 +145,25 @@ int main(void)
 	{
 		Plink2Reader reader("plink2.pgen", "plink2.pvar", "plink2.psam");
 
-		const size_t variant_count = reader.variant_count;
-		const size_t sample_count = reader.sample_count;
+		const uint32_t variant_count = reader.variant_count;
+		const uint32_t sample_count = reader.sample_count;
 
 		cout << "Variant count " << variant_count << endl;
 		cout << "Sample count " << sample_count << endl;
 
-		const size_t variant_chunk_size = 32;
-		const size_t sample_chunk_size = 32;
+		const uint32_t variant_chunk_size = 32;
+		const uint32_t sample_chunk_size = 32;
 
-		for (size_t i = 0; i < variant_count; i += variant_chunk_size)
+		for (uint32_t i = 0; i < variant_count; i += variant_chunk_size)
 		{
-			size_t variant_end_chunk = i + variant_chunk_size;
+			uint32_t variant_end_chunk = i + variant_chunk_size;
 
 			if (variant_end_chunk >= variant_count)
 				variant_end_chunk = variant_count - 1;
 
-			for (size_t j = 0; j < sample_count; j += sample_chunk_size)
+			for (uint32_t j = 0; j < sample_count; j += sample_chunk_size)
 			{
-				size_t sample_end_chunk = j + sample_chunk_size;
+				uint32_t sample_end_chunk = j + sample_chunk_size;
 
 				if (sample_end_chunk >= sample_count)
 					sample_end_chunk = sample_count - 1;
